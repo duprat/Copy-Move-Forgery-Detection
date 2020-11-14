@@ -10,3 +10,6 @@
 
 - [COVERAGE](https://github.com/wenbihan/coverage):  
 *B. Wen, Y. Zhu, R. Subramanian, T. Ng, X. Shen, and S. Winkler, “COVERAGE – A Novel Database for Copy-move Forgery Detection,” in Proc. IEEE Int. Conf. Image Processing (ICIP), 2016.*
+
+- [CVIP](http://www.diid.unipa.it/cvip/?page_id=48):
+*Copy-Move Forgery Detection by Matching Triangles of Keypoints” – IEEE Transaction on Information Forensics and Security, 2015*
