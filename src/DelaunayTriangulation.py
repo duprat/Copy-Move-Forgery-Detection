@@ -7,6 +7,7 @@ from sklearn import linear_model, datasets
 
 
 points = np.array([[100, 50], [68, 20], [100, 0], [50, 500],[150, 250], [68, 250], [150, 48], [105, 100]])
+
 tri = Delaunay(points)
 img = cv.imread('./dataset/Dataset 0/im2_t.bmp')
 vm = []
