@@ -56,8 +56,21 @@ def DelaunayTriangulation(img,keyPoints):
     
     line_X = np.arange(Xarray.min(), Xarray.max())[:, np.newaxis]
     line_y_ransac = ransac.predict(line_X)
-
-  
+    
+    lw = 2
+    plt.scatter(Xarray[inlier_mask], Yarray[inlier_mask], color='yellowgreen', marker='.',
+                label='Inliers')
+    plt.scatter(Xarray[outlier_mask], Yarray[outlier_mask], color='gold', marker='.',
+                label='Outliers')
+    
+    plt.plot(line_X, line_y_ransac, color='cornflowerblue', linewidth=lw,
+             label='RANSAC regressor')
+    
+    plt.triplot(keyPoints[:,0], keyPoints[:,1], tri.simplices)
+    
+    plt.plot(keyPoints[:,0], keyPoints[:,1], 'o')
+    plt.show()
+      
 
 def main(filepath): 
     
