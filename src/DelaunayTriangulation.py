@@ -4,9 +4,12 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import linear_model, datasets
+import CMFD as cmfd
 
 
-points = np.array([[100, 50], [68, 20], [100, 0], [50, 500],[150, 250], [68, 250], [150, 48], [105, 100]])
+#points = np.array([[100, 50], [68, 20], [100, 0], [50, 500],[150, 250], [68, 250], [150, 48], [105, 100]])
+points = cmfd.get_points('./dataset/Dataset 0/im2_t.bmp')
+
 
 tri = Delaunay(points)
 img = cv.imread('./dataset/Dataset 0/im2_t.bmp')
@@ -14,6 +17,8 @@ vm = []
 matchX = []
 matchY = []
 threshold = 1
+
+print(type(threshold))
 for i in points[tri.simplices]:
     cpt = 0
     

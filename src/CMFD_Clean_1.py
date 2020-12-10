@@ -185,11 +185,11 @@ def DelaunayTriangulation_old(img, keyPoints, imgEcrite):
     vmDistance = []
     matchX = []
     matchY = []
-    threshold = 6
+    threshold = 4
     thresholdD = 4
     tailleMin = 0
 
-    
+    '''
     for j in keyPoints[tri.simplices]:
         cpt = 0
         pt1 = (j[cpt][0], j[cpt][1])
@@ -205,10 +205,11 @@ def DelaunayTriangulation_old(img, keyPoints, imgEcrite):
         cv.circle(imgEcrite, pt1, 2, (0, 0, 255), 1)
         cv.circle(imgEcrite, pt2, 2, (0, 0, 255), 1)
         cv.circle(imgEcrite, pt3, 2, (0, 0, 255), 1)
+        '''
         
         
     # on montre les triangles obtenus    
-    cv.imshow("Triangles",imgEcrite)
+  #  cv.imshow("Triangles",imgEcrite)
     if cv.waitKey(0) & 0xff == 27:
         cv.destroyAllWindows()
     
@@ -285,7 +286,7 @@ def DelaunayTriangulation_old(img, keyPoints, imgEcrite):
         inlier_mask = ransac.inlier_mask_
         outlier_mask = np.logical_not(inlier_mask)
 
-
+        '''
         while(j > 100):
             Xarray = Xarray[outlier_mask]
             Yarray = Yarray[outlier_mask]
@@ -303,9 +304,20 @@ def DelaunayTriangulation_old(img, keyPoints, imgEcrite):
             cv.circle(img, pt2, 2, (255, 255, 0), -1)
             cv.line(img, pt, pt2, (255, 255, 0), 1)
             j += 1
+        '''
+
+        for j in range(0, Xarray[inlier_mask].size - 1):
+            pt = (Xarray[inlier_mask][j][0], Yarray[inlier_mask][j][0])
+            pt2 = (Xarray[inlier_mask][j+1][0], Yarray[inlier_mask][j+1][0])
+
+            cv.circle(img, pt, 2, (255, 255, 0), -1)
+            cv.circle(img, pt2, 2, (255, 255, 0), -1)
+            cv.line(img, pt, pt2, (255, 0, 255), 1)
+            j += 1
 
 
 def DelaunayTriangulation(img, keyPoints, imgEcrite, imgMask):
+    #cv.imshow("DbScan", img)
     tri = Delaunay(keyPoints)      
     
     vm = []
@@ -313,8 +325,8 @@ def DelaunayTriangulation(img, keyPoints, imgEcrite, imgMask):
     vmDistance = []
     matchX = []
     matchY = []
-    threshold = 2
-    thresholdD = 2
+    threshold = 0
+    thresholdD = 0
     tailleMin = 0
 
     if (cv.countNonZero(cv.cvtColor(imgMask, cv.COLOR_BGR2GRAY)) == 0):
@@ -401,6 +413,7 @@ def DelaunayTriangulation(img, keyPoints, imgEcrite, imgMask):
 
         inlier_mask = ransac.inlier_mask_
         outlier_mask = np.logical_not(inlier_mask)
+        '''
         if(isImgBlack):
             while(j > 100):
                 Xarray = Xarray[outlier_mask]
@@ -418,14 +431,15 @@ def DelaunayTriangulation(img, keyPoints, imgEcrite, imgMask):
                 cv.line(img, pt, pt2, (255, 255, 0), 1)
                 j += 1
         else:
-            for j in range(0, Xarray[inlier_mask].size - 1):
-                pt = (Xarray[inlier_mask][j][0], Yarray[inlier_mask][j][0])
-                pt2 = (Xarray[inlier_mask][j+1][0], Yarray[inlier_mask][j+1][0])
+        '''
+        for j in range(0, Xarray[inlier_mask].size - 1):
+            pt = (Xarray[inlier_mask][j][0], Yarray[inlier_mask][j][0])
+            pt2 = (Xarray[inlier_mask][j+1][0], Yarray[inlier_mask][j+1][0])
 
-                cv.circle(img, pt, 2, (255, 255, 0), -1)
-                cv.circle(img, pt2, 2, (255, 255, 0), -1)
-                cv.line(img, pt, pt2, (255, 0, 255), 1)
-                j += 1
+            cv.circle(img, pt, 2, (255, 255, 0), -1)
+            cv.circle(img, pt2, 2, (255, 255, 0), -1)
+            cv.line(img, pt, pt2, (255, 0, 255), 1)
+            j += 1
 
 def siftDetector(image):
  sift = cv.SIFT_create()
@@ -477,10 +491,10 @@ def locateForgery(image,key_points,descriptors,radius=40,min_sample=2):
     
     imgEcrite = copy.deepcopy(image)                # avec une copy simple il y a risque qu'image ecrite et image
                                                     # continuent a avoir les mêmes valeurs 
+    if(len(points_for_delaunay) > 4):
+        DelaunayTriangulation_old(image, np.array(points_for_delaunay), imgEcrite)
     
-    DelaunayTriangulation_old(image, np.array(points_for_delaunay), imgEcrite)
-    
-    cv.imshow("Delaunay Triangulation", image)
+     #cv.imshow("Delaunay Triangulation", image)
 
     if cv.waitKey(0) & 0xff == 27:
         cv.destroyAllWindows()
@@ -532,9 +546,11 @@ def locateForgery(image,key_points,descriptors,radius=40,min_sample=2):
         if(centroids_labels[i] != -1):
             cv.circle(forgery,clusters_centroids[i], 5, (0,255,255),-1)
     """
-    
-    return forgery
-
+    if(len(points_for_delaunay) < 5):
+        return forgery
+    else:
+        return image
+'''
 def main(filepath):
       #fcn = models.segmentation.fcn_resnet101(pretrained=True).eval()
       dlab = models.segmentation.deeplabv3_resnet101(pretrained=1).eval()
@@ -558,7 +574,7 @@ def main(filepath):
       cv.drawKeypoints(img, keyPoints, imgAndKeyFeatures,
                        flags=cv.DRAW_MATCHES_FLAGS_DEFAULT)
       
-      cv.imshow("Key Points", imgAndKeyFeatures)
+      #cv.imshow("Key Points", imgAndKeyFeatures)
 
       if cv.waitKey(0) & 0xff == 27:
           cv.destroyAllWindows()
@@ -579,21 +595,22 @@ def main(filepath):
       if cv.waitKey(0) & 0xff == 27:
           cv.destroyAllWindows()
 
-
+'''
 def mainDBSCAN(filepath):
     img = cv.imread(filepath, cv.IMREAD_UNCHANGED)
+    imgEcrite = copy.deepcopy(img)
     
     keyPoints, descriptors = siftDetector(img)
     
     forgery = locateForgery(img, keyPoints, descriptors, 40,2)
-        
+
     cv.imshow("Forgery", forgery)
 
     if cv.waitKey(0) & 0xff == 27:
         cv.destroyAllWindows()
 
 
-filepath = "../CVIP/Dataset 0/im2_t.bmp"
+filepath = "../CVIP/Dataset 0/im28_t.bmp"
 if isValid(filepath):
 
     #main(filepath)
